@@ -1,0 +1,189 @@
+.dog-overview-main {
+  padding-top: 38px;
+}
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 40px;
+  color: #20483c;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #c55f48;
+}
+
+.back-link:focus-visible {
+  outline: 3px solid #c55f48;
+  outline-offset: 4px;
+}
+
+.dog-page-message {
+  padding: 24px 0;
+  color: #718078;
+}
+
+.dog-page-error {
+  color: #a23f32;
+}
+
+.dog-profile-heading {
+  padding: 20px 0 52px;
+}
+
+.dog-profile-heading h1 {
+  margin: 0;
+  color: #17392f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 400;
+  line-height: 1.08;
+  overflow-wrap: anywhere;
+}
+
+.dog-profile-details {
+  margin-top: 14px;
+  color: #718078;
+  font-size: 15px;
+}
+
+.dog-activities .section-heading h2,
+.dog-history h2 {
+  color: #17392f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.activity-options {
+  margin-top: 4px;
+}
+
+.activity-option {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 20px;
+  min-height: 104px;
+  padding: 20px 4px;
+  border-bottom: 1px solid #dce4dc;
+  color: #263a32;
+  text-decoration: none;
+}
+
+.activity-option-ready {
+  transition: background-color 150ms ease, padding-inline 150ms ease;
+}
+
+.activity-option-ready:hover {
+  padding-inline: 14px;
+  background: #edf2eb;
+}
+
+.activity-option-ready:focus-visible {
+  outline: 3px solid #c55f48;
+  outline-offset: 2px;
+}
+
+.activity-option-pending {
+  color: #718078;
+}
+
+.activity-number {
+  color: #87958b;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 16px;
+}
+
+.activity-copy {
+  display: grid;
+  gap: 6px;
+}
+
+.activity-copy strong {
+  color: #17392f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.activity-copy > span {
+  color: #718078;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.activity-arrow {
+  color: #20483c;
+  font-size: 22px;
+  transition: transform 150ms ease;
+}
+
+.activity-option-ready:hover .activity-arrow {
+  transform: translateX(4px);
+}
+
+.activity-status {
+  color: #8b978e;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+}
+
+.dog-history {
+  margin-top: 64px;
+  padding: 28px 0 0;
+  border-top: 1px solid #dce4dc;
+}
+
+.dog-history .dashboard-eyebrow {
+  margin-bottom: 8px;
+}
+
+.dog-history h2 {
+  margin: 0;
+}
+
+.dog-history > p:last-child {
+  margin-top: 12px;
+  color: #718078;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+@media (max-width: 560px) {
+  .dog-overview-main {
+    padding-top: 26px;
+  }
+
+  .back-link {
+    margin-bottom: 28px;
+  }
+
+  .dog-profile-heading {
+    padding-bottom: 40px;
+  }
+
+  .activity-option {
+    grid-template-columns: 32px minmax(0, 1fr) auto;
+    gap: 12px;
+    min-height: 96px;
+    padding-inline: 0;
+  }
+
+  .activity-option-ready:hover {
+    padding-inline: 6px;
+  }
+
+  .activity-status {
+    max-width: 72px;
+    text-align: right;
+    line-height: 1.4;
+  }
+
+  .dog-history {
+    margin-top: 48px;
+  }
+}
