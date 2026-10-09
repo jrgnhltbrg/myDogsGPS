@@ -1,4 +1,3 @@
-import { buffer as turfBuffer } from '@turf/buffer'
 import L from 'leaflet'
 import { useEffect, useRef, useState } from 'react'
 import { CircleMarker, GeoJSON, MapContainer, Polyline, TileLayer, useMap } from 'react-leaflet'
@@ -74,6 +73,68 @@ function geoJsonFeature(points, geometryType) {
     geometry: {
       type: geometryType,
       coordinates: points.map((point) => [point.longitude, point.latitude]),
+    },
+  }
+}
+
+function buildSearchCorridor(points, widthMeters = 50) {
+  if (points.length < 2) return null
+
+  const origin = points[0]
+  const originLatitudeRadians = (origin.latitude * Math.PI) / 180
+  const metersPerLatitude = 111_320
+  const metersPerLongitude = 111_320 * Math.cos(originLatitudeRadians)
+
+  const localCoordinates = points.map((point) => ({
+    x: (point.longitude - origin.longitude) * metersPerLongitude,
+    y: (point.latitude - origin.latitude) * metersPerLatitude,
+  }))
+
+  const leftBoundary = []
+  const rightBoundary = []
+
+  for (let index = 0; index < localCoordinates.length; index += 1) {
+    const previous = localCoordinates[Math.max(0, index - 1)]
+    const next = localCoordinates[Math.min(localCoordinates.length - 1, index + 1)]
+
+    const deltaX = next.x - previous.x
+    const deltaY = next.y - previous.y
+    const length = Math.hypot(deltaX, deltaY) || 1
+    const normalX = (-deltaY / length) * widthMeters
+    const normalY = (deltaX / length) * widthMeters
+
+    const leftPoint = {
+      x: localCoordinates[index].x + normalX,
+      y: localCoordinates[index].y + normalY,
+    }
+    const rightPoint = {
+      x: localCoordinates[index].x - normalX,
+      y: localCoordinates[index].y - normalY,
+    }
+
+    leftBoundary.push({
+      longitude: origin.longitude + leftPoint.x / metersPerLongitude,
+      latitude: origin.latitude + leftPoint.y / metersPerLatitude,
+    })
+    rightBoundary.push({
+      longitude: origin.longitude + rightPoint.x / metersPerLongitude,
+      latitude: origin.latitude + rightPoint.y / metersPerLatitude,
+    })
+  }
+
+  const ring = [
+    ...leftBoundary.map((point) => [point.longitude, point.latitude]),
+    ...rightBoundary.slice().reverse().map((point) => [point.longitude, point.latitude]),
+  ]
+
+  if (ring.length < 4) return null
+
+  return {
+    type: 'Feature',
+    properties: {},
+    geometry: {
+      type: 'Polygon',
+      coordinates: [ring.concat([ring[0]])],
     },
   }
 }
@@ -231,7 +292,7 @@ export function DogSearch() {
     }
 
     const nextRoute = geoJsonFeature(recordedPoints, 'LineString')
-    const nextArea = turfBuffer(nextRoute, 0.05, { units: 'kilometers' })
+    const nextArea = buildSearchCorridor(recordedPoints, 50)
     if (!nextArea) {
       setRecordError('Sökytan kunde inte skapas. Spela in sträckan igen.')
       return
