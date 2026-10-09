@@ -66,6 +66,45 @@ function formatCreatedAt(date) {
   }).format(new Date(date))
 }
 
+function smoothTrack(points) {
+  if (points.length < 3) return points
+
+  const smoothed = []
+
+  for (let index = 0; index < points.length; index += 1) {
+    const previous = points[Math.max(0, index - 1)]
+    const current = points[index]
+    const next = points[Math.min(points.length - 1, index + 1)]
+
+    smoothed.push({
+      latitude: (previous.latitude + current.latitude + next.latitude) / 3,
+      longitude: (previous.longitude + current.longitude + next.longitude) / 3,
+    })
+  }
+
+  return smoothed
+}
+
+function sanitizeTrack(points) {
+  if (points.length < 2) return points
+
+  const cleaned = [points[0]]
+
+  for (let index = 1; index < points.length; index += 1) {
+    const previous = cleaned[cleaned.length - 1]
+    const current = points[index]
+    const traveledDistance = distanceBetween(previous, current)
+
+    if (traveledDistance < 1.5 || traveledDistance > 35) {
+      continue
+    }
+
+    cleaned.push(current)
+  }
+
+  return smoothTrack(cleaned)
+}
+
 function geoJsonFeature(points, geometryType) {
   return {
     type: 'Feature',
@@ -265,8 +304,11 @@ export function DogSearch() {
 
         setPoints((currentPoints) => {
           const previous = currentPoints.at(-1)
-          if (previous && distanceBetween(previous, nextLocation) < 3) return currentPoints
-          const nextPoints = [...currentPoints, nextLocation]
+          if (previous && distanceBetween(previous, nextLocation) < 3) {
+            return currentPoints
+          }
+
+          const nextPoints = sanitizeTrack([...currentPoints, nextLocation])
           pointsRef.current = nextPoints
           return nextPoints
         })
@@ -285,7 +327,7 @@ export function DogSearch() {
     setRecording(false)
     setRecordError(null)
 
-    const recordedPoints = pointsRef.current
+    const recordedPoints = sanitizeTrack(pointsRef.current)
     if (recordedPoints.length < 2 || getTrackDistance(recordedPoints) < 4) {
       setRecordError('Spela in en längre sträcka innan du stoppar inspelningen.')
       return
