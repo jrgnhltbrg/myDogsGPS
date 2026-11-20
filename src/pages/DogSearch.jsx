@@ -66,6 +66,11 @@ function formatCreatedAt(date) {
   }).format(new Date(date))
 }
 
+function windDirectionLabel(degrees) {
+  const directions = ['N', 'NÖ', 'Ö', 'SÖ', 'S', 'SV', 'V', 'NV']
+  return directions[Math.round(degrees / 45) % 8]
+}
+
 function smoothTrack(points) {
   if (points.length < 3) return points
 
@@ -180,6 +185,8 @@ export function DogSearch() {
   const [recordError, setRecordError] = useState(null)
   const [saveMessage, setSaveMessage] = useState(null)
   const [saving, setSaving] = useState(false)
+  const [wind, setWind] = useState(null)
+  const [windError, setWindError] = useState(null)
 
   useEffect(() => {
     if (!profile?.id) return
@@ -242,6 +249,46 @@ export function DogSearch() {
 
     return undefined
   }, [])
+
+  useEffect(() => {
+    if (!currentLocation) return undefined
+
+    const controller = new AbortController()
+
+    async function loadWind() {
+      setWindError(null)
+      try {
+        const params = new URLSearchParams({
+          latitude: currentLocation.latitude.toFixed(5),
+          longitude: currentLocation.longitude.toFixed(5),
+          current: 'wind_speed_10m,wind_direction_10m',
+          wind_speed_unit: 'ms',
+          timezone: 'auto',
+        })
+        const response = await fetch(`https://api.open-meteo.com/v1/forecast?${params}`, {
+          signal: controller.signal,
+        })
+        if (!response.ok) throw new Error('Vinddata kunde inte hämtas')
+
+        const data = await response.json()
+        setWind({
+          speed: data.current?.wind_speed_10m,
+          direction: data.current?.wind_direction_10m,
+        })
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          setWindError('Vindriktningen kunde inte hämtas')
+        }
+      }
+    }
+
+    loadWind()
+    const intervalId = window.setInterval(loadWind, 10 * 60 * 1000)
+    return () => {
+      controller.abort()
+      window.clearInterval(intervalId)
+    }
+  }, [currentLocation?.latitude, currentLocation?.longitude])
 
   useEffect(() => () => {
     if (watchIdRef.current !== null && navigator.geolocation) {
@@ -440,7 +487,30 @@ export function DogSearch() {
                     />
                   )}
                 </MapContainer>
-                <div className="map-attribution-note">Kartdata © OpenStreetMap</div>
+                {(wind || windError) && (
+                  <div className="wind-indicator" role="status" aria-live="polite">
+                    {wind?.direction !== undefined && (
+                      <span
+                        className="wind-arrow"
+                        style={{ transform: `rotate(${wind.direction}deg)` }}
+                        aria-hidden="true"
+                      >
+                        ↑
+                      </span>
+                    )}
+                    <span>
+                      <strong>Vind</strong>
+                      {wind?.direction !== undefined && (
+                        <small>
+                          från {windDirectionLabel(wind.direction)} · {Math.round(wind.direction)}°
+                          {wind.speed !== undefined ? ` · ${wind.speed.toFixed(1)} m/s` : ''}
+                        </small>
+                      )}
+                      {windError && <small>{windError}</small>}
+                    </span>
+                  </div>
+                )}
+                <div className="map-attribution-note">Kartdata © OpenStreetMap · Vind Open-Meteo</div>
               </section>
 
               <aside className="search-controls">

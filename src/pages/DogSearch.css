@@ -100,6 +100,54 @@
   font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
 }
 
+.wind-indicator {
+  position: absolute;
+  z-index: 500;
+  top: 12px;
+  right: 12px;
+  display: flex;
+  min-width: 112px;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 10px;
+  border: 1px solid rgba(32, 72, 60, 0.14);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 3px 12px rgba(23, 57, 47, 0.12);
+  color: var(--search-deep);
+}
+
+.wind-arrow {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #edf2ec;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 500ms ease;
+}
+
+.wind-indicator strong,
+.wind-indicator small {
+  display: block;
+}
+
+.wind-indicator strong {
+  font-size: 11px;
+}
+
+.wind-indicator small {
+  margin-top: 2px;
+  color: #52645a;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
 .map-attribution-note {
   position: absolute;
   z-index: 500;
@@ -460,6 +508,13 @@
     height: 44svh;
     min-height: 290px;
     max-height: 440px;
+  }
+
+  .wind-indicator {
+    top: 8px;
+    right: 8px;
+    min-width: 104px;
+    padding: 7px 8px;
   }
 
   .location-status {
