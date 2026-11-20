@@ -100,6 +100,37 @@
   font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
 }
 
+.map-north-indicator {
+  position: absolute;
+  z-index: 500;
+  top: 12px;
+  left: 12px;
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(32, 72, 60, 0.14);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 3px 12px rgba(23, 57, 47, 0.12);
+  color: var(--search-deep);
+}
+
+.map-north-arrow {
+  height: 21px;
+  color: #a34636;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 22px;
+}
+
+.map-north-indicator strong {
+  font-size: 9px;
+  line-height: 10px;
+}
+
 .wind-indicator {
   position: absolute;
   z-index: 500;
@@ -508,6 +539,11 @@
     height: 44svh;
     min-height: 290px;
     max-height: 440px;
+  }
+
+  .map-north-indicator {
+    top: 8px;
+    left: 8px;
   }
 
   .wind-indicator {

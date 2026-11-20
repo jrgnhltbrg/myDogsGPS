@@ -487,6 +487,10 @@ export function DogSearch() {
                     />
                   )}
                 </MapContainer>
+                <div className="map-north-indicator" aria-label="Norr">
+                  <span className="map-north-arrow" aria-hidden="true">↑</span>
+                  <strong>N</strong>
+                </div>
                 {(wind || windError) && (
                   <div className="wind-indicator" role="status" aria-live="polite">
                     {wind?.direction !== undefined && (
