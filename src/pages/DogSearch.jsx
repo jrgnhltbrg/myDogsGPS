@@ -487,16 +487,12 @@ export function DogSearch() {
                     />
                   )}
                 </MapContainer>
-                <div className="map-north-indicator" aria-label="Norr">
-                  <span className="map-north-arrow" aria-hidden="true">↑</span>
-                  <strong>N</strong>
-                </div>
                 {(wind || windError) && (
                   <div className="wind-indicator" role="status" aria-live="polite">
                     {wind?.direction !== undefined && (
                       <span
                         className="wind-arrow"
-                        style={{ transform: `rotate(${wind.direction}deg)` }}
+                        style={{ transform: `rotate(${(wind.direction + 180) % 360}deg)` }}
                         aria-hidden="true"
                       >
                         ↑
