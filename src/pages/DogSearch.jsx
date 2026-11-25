@@ -199,6 +199,7 @@ export function DogSearch() {
   const [wind, setWind] = useState(null)
   const [windError, setWindError] = useState(null)
   const [mapExpanded, setMapExpanded] = useState(false)
+  const [satelliteView, setSatelliteView] = useState(false)
 
   useEffect(() => {
     if (!mapExpanded) return undefined
@@ -493,6 +494,13 @@ export function DogSearch() {
                 >
                   {mapExpanded ? 'Stäng helskärm' : 'Visa helskärm'}
                 </button>
+                <button
+                  className="map-layer-button"
+                  type="button"
+                  onClick={() => setSatelliteView((isSatellite) => !isSatellite)}
+                >
+                  {satelliteView ? 'Vanlig karta' : 'Satellitvy'}
+                </button>
                 <MapContainer
                   id="dog-search-map"
                   className="search-map"
@@ -504,8 +512,13 @@ export function DogSearch() {
                   <MapSizeObserver expanded={mapExpanded} />
                   <MapViewport center={mapCenter} areaFeature={selectedAreaId ? areaFeature : null} />
                   <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    key={satelliteView ? 'satellite' : 'street'}
+                    attribution={satelliteView
+                      ? 'Tiles &copy; Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+                      : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}
+                    url={satelliteView
+                      ? 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                      : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'}
                   />
                   {currentLocation && (
                     <CircleMarker
@@ -553,7 +566,7 @@ export function DogSearch() {
                     </span>
                   </div>
                 )}
-                <div className="map-attribution-note">Kartdata © OpenStreetMap · Vind Open-Meteo</div>
+                <div className="map-attribution-note">Vinddata: Open-Meteo</div>
               </section>
 
               <aside className="search-controls">
