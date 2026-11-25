@@ -91,6 +91,16 @@
   background: #e9eee9;
 }
 
+.search-map-section.is-expanded {
+  position: fixed;
+  z-index: 2000;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  border: 0;
+}
+
 .search-map {
   z-index: 0;
   width: 100%;
@@ -98,6 +108,39 @@
   min-height: 430px;
   background: #e7ece7;
   font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
+}
+
+.search-map-section.is-expanded .search-map {
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+}
+
+.map-expand-button {
+  position: absolute;
+  z-index: 600;
+  top: 12px;
+  left: 12px;
+  min-height: 38px;
+  padding: 8px 11px;
+  border: 1px solid rgba(32, 72, 60, 0.14);
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 3px 12px rgba(23, 57, 47, 0.12);
+  color: var(--search-deep);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.map-expand-button:hover {
+  background: #edf2ec;
+}
+
+.map-expand-button:focus-visible {
+  outline: 3px solid var(--search-coral);
+  outline-offset: 2px;
 }
 
 .wind-indicator {
@@ -515,6 +558,14 @@
     right: 8px;
     min-width: 104px;
     padding: 7px 8px;
+  }
+
+  .map-expand-button {
+    top: 8px;
+    left: 8px;
+    min-height: 36px;
+    padding: 7px 9px;
+    font-size: 11px;
   }
 
   .location-status {

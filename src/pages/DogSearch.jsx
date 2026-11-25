@@ -35,6 +35,17 @@ function MapViewport({ center, areaFeature }) {
   return null
 }
 
+function MapSizeObserver({ expanded }) {
+  const map = useMap()
+
+  useEffect(() => {
+    const frameId = window.requestAnimationFrame(() => map.invalidateSize({ pan: false }))
+    return () => window.cancelAnimationFrame(frameId)
+  }, [expanded, map])
+
+  return null
+}
+
 function distanceBetween(first, second) {
   const radians = (degrees) => (degrees * Math.PI) / 180
   const earthRadius = 6371000
@@ -187,6 +198,24 @@ export function DogSearch() {
   const [saving, setSaving] = useState(false)
   const [wind, setWind] = useState(null)
   const [windError, setWindError] = useState(null)
+  const [mapExpanded, setMapExpanded] = useState(false)
+
+  useEffect(() => {
+    if (!mapExpanded) return undefined
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape') setMapExpanded(false)
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [mapExpanded])
 
   useEffect(() => {
     if (!profile?.id) return
@@ -451,14 +480,28 @@ export function DogSearch() {
             </div>
 
             <div className="search-workspace">
-              <section className="search-map-section" aria-label="Karta över sökområdet">
+              <section
+                className={`search-map-section${mapExpanded ? ' is-expanded' : ''}`}
+                aria-label="Karta över sökområdet"
+              >
+                <button
+                  className="map-expand-button"
+                  type="button"
+                  aria-controls="dog-search-map"
+                  aria-pressed={mapExpanded}
+                  onClick={() => setMapExpanded((expanded) => !expanded)}
+                >
+                  {mapExpanded ? 'Stäng helskärm' : 'Visa helskärm'}
+                </button>
                 <MapContainer
+                  id="dog-search-map"
                   className="search-map"
                   center={[mapCenter.latitude, mapCenter.longitude]}
                   zoom={mapCenter.zoom}
                   scrollWheelZoom
                   zoomControl={false}
                 >
+                  <MapSizeObserver expanded={mapExpanded} />
                   <MapViewport center={mapCenter} areaFeature={selectedAreaId ? areaFeature : null} />
                   <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
